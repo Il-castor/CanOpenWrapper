@@ -34,7 +34,7 @@ void CanBusWrapper::canBusCallback()
 void CanBusWrapper::writeData(struct can_frame frame)
 {
     if (write(this->m_nSocketCan, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame))
-        throw CanOpenException(WRITE_ON_SCK_ERR, "Error on write data to socket");
+        throw CANException(WRITE_ON_SCK_ERR, "Error on write data to socket");
 }
 
 CanBusWrapper::~CanBusWrapper()

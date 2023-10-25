@@ -31,14 +31,14 @@ namespace CanNetworkBase {
             int getSocket() { return this->m_nSocket; }
     };
 
-    class CanOpenException : public std::exception
+    class CANException : public std::exception
     {
         private:
             int m_nStatusCode;
             std::string m_sMsg;
 
         public:
-            CanOpenException(int nStatusCode, std::string sMsg)
+            CANException(int nStatusCode, std::string sMsg)
             {
                 this->m_nStatusCode = nStatusCode;
                 this->m_sMsg = sMsg;
