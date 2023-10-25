@@ -28,7 +28,7 @@ namespace CanNetworkBase {
             CanNetwork(std::string sInterface, int nBitrate);
             virtual ~CanNetwork() {};
 
-            int getSocket() { return m_nSocket; }
+            int getSocket() { return this->m_nSocket; }
     };
 
     class CanOpenException : public std::exception

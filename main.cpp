@@ -1,5 +1,5 @@
 #include "canbus_network.hpp"
-#include "canbus_wrapper.hpp"
+#include "canbus.hpp"
 
 using namespace CanNetworkBase;
 using namespace CanBusBase;
@@ -7,7 +7,7 @@ using namespace CanBusBase;
 int main(int argc, char* argv[])
 {
     CanNetwork* pSocketCan = NULL;
-    CanBusWrapper* pCanBus = NULL;
+    CANBus* pBus = NULL;
 
     try 
     {
@@ -16,15 +16,15 @@ int main(int argc, char* argv[])
 
         printf("[ SOCKET ]: %d\n", nSocket);
 
-        pCanBus = new CanBusWrapper(nSocket);
+        pBus = new CANBus(nSocket);
 
-        // test canbus frame send
         struct can_frame frame;
         frame.can_id = 0x01;
         frame.can_dlc = 1;
         frame.data[0] = 0x02;
-        
-        pCanBus->writeData(frame);
+
+        pBus->writeData(frame);
+
     }
     catch (CanOpenException &canError)
     { 
@@ -41,7 +41,9 @@ int main(int argc, char* argv[])
 
     sleep(30);
     delete pSocketCan;
-    delete pCanBus;
+
+    if (pBus != NULL)
+        delete pBus;
 
     return 0;
 }

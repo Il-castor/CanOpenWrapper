@@ -23,13 +23,8 @@ void CanBusWrapper::canBusCallback()
         {
             if ((cfd.can_id & this->m_filter.can_mask) == (this->m_filter.can_id & this->m_filter.can_mask))
             {
-
                 /* if it need it possible to implement everything */
-                printf("[ ID ]: %d, [ DLC ]: %d, [ DATA ]: ", cfd.can_id, cfd.can_dlc);
-                for (int i = 0; i < cfd.can_dlc; i++)
-                    printf("%d ", cfd.data[i]);
-                
-                printf("\n");
+                this->canBusListener(cfd);
             }
         }
 

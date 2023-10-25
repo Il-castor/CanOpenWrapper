@@ -19,14 +19,16 @@ include_directories(
 
 add_library(canbus_network src/canbus_network.cpp)
 add_library(canbus_wrapper src/canbus_wrapper.cpp)
+add_library(canbus src/canbus.cpp)
 
 add_executable(main main.cpp)
 
 target_link_libraries(canbus_wrapper canbus_network)
+target_link_libraries(canbus canbus_wrapper)
 
 target_link_libraries( main
     canbus_network
-    canbus_wrapper
+    canbus
 )
 
 install(TARGETS 

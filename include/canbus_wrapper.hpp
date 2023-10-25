@@ -1,9 +1,5 @@
 #pragma once
 
-// can bus include
-#include <linux/can.h>
-#include <linux/can/raw.h>
-
 #include "canbus_network.hpp"
 
 #include <thread>
@@ -24,10 +20,14 @@ namespace CanBusBase {
             struct can_filter m_filter;
 
             void canBusCallback();
+        
+        protected:
+
+            virtual void canBusListener(struct can_frame cfd) = 0;
 
         public:
 
-            CanBusWrapper(int nSocketCan, int nCanID = 0x00, int nCanMask = 0x00);
+            CanBusWrapper(int nSocketCan, int nCanID, int nCanMask);
             void writeData(struct can_frame frame);
             virtual ~CanBusWrapper();
 
