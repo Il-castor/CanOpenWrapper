@@ -15,10 +15,13 @@ endif()
 
 include_directories(
     "include"
+    "include/net"
+    "include/canopen_utils"
 )
 
-add_library(canbus_network src/canbus_network.cpp)
-add_library(canbus_wrapper src/canbus_wrapper.cpp)
+add_library(canbus_network src/net/canbus_network.cpp)
+add_library(canbus_wrapper src/net/canbus_wrapper.cpp)
+add_library(canopen_utils src/canopen_utils/utils.cpp)
 add_library(canbus src/canbus.cpp)
 
 add_executable(main main.cpp)
