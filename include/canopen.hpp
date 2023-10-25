@@ -1,34 +1,20 @@
 #include "canbus_wrapper.hpp"
+#include "utils.hpp"
 
 namespace CanOpenWrapper {
-
-    #define CANOPEN_HEADER_SIZE 8
-    #define CANOPEN_DATA_LENGTH 4
-
-    enum MissionType
-    {
-        DOWNLOAD_REQ = 2,
-        UPLOAD = 4,
-        DOWNLOAD_REP = 6,
-        ERROR = 8 
-    };
-
-    typedef struct canopen_frame {
-
-        uint32_t canopen_id;
-        bool canopen_header[CANOPEN_HEADER_SIZE];
-        uint16_t canopen_index;
-        uint8_t canopen_subindex;
-        uint8_t data[CANOPEN_DATA_LENGTH];
-
-    };
 
     class CANOpen : public CanBusBase::CanBusWrapper
     {
         private:
 
             int m_nNodeID;
-            int m_nBaseID;
+            int m_nBaseIDReq;
+            int m_nBaseIDResp;
+
+            CANOpenUtils::canopen_frame m_coLastMsgSent;
+            int m_nCounterCheck = 0;
+            int m_nThreeshold = 0;
+
             void init();
 
             template<typename Base, typename T>
@@ -36,16 +22,28 @@ namespace CanOpenWrapper {
 
         public:
 
-            CANOpen(int nNodeID, int nSocketCan, int nBaseID);
+            CANOpen(int nNodeID, int nSocketCan, int nBaseIDReq, int nBaseIDResp);
+            void canBusListener(struct can_frame cfd);
             
             template <typename T>
-            canopen_frame download(uint16_t nIndex, uint8_t nSubIndex, T value, int nTimeOut=5)
+            CANOpenUtils::canopen_frame download(uint16_t nIndex, uint8_t nSubIndex, T value, int nTimeOut=5)
             {
-                canopen_frame frame;
-                canopen_frame retFrame;
+                CANOpenUtils::canopen_frame coFrame;
+                CANOpenUtils::canopen_frame coRetFrame;
 
                 if ((this->instanceof<double>(value)) || (this->instanceof<long long int>(value)))
                     throw CanNetworkBase::CANException(CanNetworkBase::MAX_LEN_EXCEEDED, "[ CANOPEN ]: Maximum payload length exceeded");
+
+                coFrame = CANOpenUtils::getFrameFromData<T>(CANOpenUtils::DOWNLOAD_REQ, nIndex, nSubIndex, value);
+                coFrame.canopen_id = this->m_nBaseIDReq + m_nNodeID;
+
+                can_frame frame = CANOpenUtils::getCANBusFrameFromCANOpenFrame(coFrame);
+
+                // Send the frame on the CANBus
+                this->writeData(frame);
+
+                this->m_coLastMsgSent = frame;
+
             }
     };
 

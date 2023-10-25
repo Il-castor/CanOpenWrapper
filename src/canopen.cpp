@@ -3,11 +3,12 @@
 namespace CanOpenWrapper 
 {
 
-    CANOpen::CANOpen(int nNodeID, int nSocketCan, int nBaseID)
-    : CanBusBase::CanBusWrapper(nSocketCan, nBaseID + nNodeID, 0x7FF)
+    CANOpen::CANOpen(int nNodeID, int nSocketCan, int nBaseIDReq, int nBaseIDResp)
+    : CanBusBase::CanBusWrapper(nSocketCan, nBaseIDResp + nNodeID, 0x7FF)
     {
         this->m_nNodeID = nNodeID;
-        this->m_nBaseID = nBaseID;
+        this->m_nBaseIDReq = nBaseIDReq;
+        this->m_nBaseIDResp = nBaseIDResp;
         this->init();
     }
 
@@ -20,6 +21,30 @@ namespace CanOpenWrapper
         memset(&frame, 0x01, 2);
 
         this->writeData(frame);
+    }
+
+    void CANOpen::canBusListener(struct can_frame cfd)
+    {
+        CANOpenUtils::canopen_frame coFrame;
+        coFrame = CANOpenUtils::getCANOpenFramFromCANBusFrame(cfd);
+
+        if (this->m_coLastMsgSent.canopen_id != 0x00)
+        {
+            if (this->m_nThreeshold < this->m_nCounterCheck)
+            {
+                if ((this->m_coLastMsgSent.canopen_index == coFrame.canopen_index) &&
+                    (this->m_coLastMsgSent.canopen_subindex == coFrame.canopen_subindex))
+                {
+                    memset(&this->m_coLastMsgSent, '\0', sizeof(CANOpenUtils::canopen_frame));
+                    this->m_nCounterCheck = 0;
+                }
+                else { this->m_nCounterCheck++; }
+            }
+            else 
+            {
+                this->m_nCounterCheck = 0;
+            }
+        }
     }
 
 }
