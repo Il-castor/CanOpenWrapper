@@ -42,9 +42,14 @@ namespace CanOpenWrapper
             }
             else 
             {
+                memset(&this->m_coLastMsgSent, '\0', sizeof(CANOpenUtils::canopen_frame));
                 this->m_nCounterCheck = 0;
+                throw CanNetworkBase::CANException(CanNetworkBase::FAILED_RECV_RESP, "Failed to Read the Response from CanBus");
             }
         }
+
+        // TODO: implement for only download, check if on the upload could it be
+        // some error introduct for the continuos request, maybe FIFO Queue
     }
 
 }

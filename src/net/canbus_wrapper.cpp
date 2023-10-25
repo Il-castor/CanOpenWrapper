@@ -24,7 +24,10 @@ void CanBusWrapper::canBusCallback()
             if ((cfd.can_id & this->m_filter.can_mask) == (this->m_filter.can_id & this->m_filter.can_mask))
             {
                 /* if it need it possible to implement everything */
-                this->canBusListener(cfd);
+                try {
+                    this->canBusListener(cfd);
+                }
+                catch (CANException &eErr) {}
             }
         }
 
