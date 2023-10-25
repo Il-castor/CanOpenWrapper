@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
         pBus->writeData(frame);
 
     }
-    catch (CanOpenException &canError)
+    catch (CANException &canError)
     { 
         printf(
             "[ ID ]: %d, [ MSG ]: %s\n", 
