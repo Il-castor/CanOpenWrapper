@@ -26,10 +26,9 @@ namespace CanOpenWrapper {
             void canBusListener(struct can_frame cfd);
             
             template <typename T>
-            CANOpenUtils::canopen_frame download(uint16_t nIndex, uint8_t nSubIndex, T value, int nTimeOut=5)
+            void download(uint16_t nIndex, uint8_t nSubIndex, T value, int nTimeOut=5)
             {
                 CANOpenUtils::canopen_frame coFrame;
-                CANOpenUtils::canopen_frame coRetFrame;
 
                 if ((this->instanceof<double>(value)) || (this->instanceof<long long int>(value)))
                     throw CanNetworkBase::CANException(CanNetworkBase::MAX_LEN_EXCEEDED, "[ CANOPEN ]: Maximum payload length exceeded");
@@ -42,8 +41,7 @@ namespace CanOpenWrapper {
                 // Send the frame on the CANBus
                 this->writeData(frame);
 
-                this->m_coLastMsgSent = frame;
-
+                this->m_coLastMsgSent = coFrame;
             }
     };
 

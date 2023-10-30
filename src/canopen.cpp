@@ -16,9 +16,9 @@ namespace CanOpenWrapper
     {
         can_frame frame;
 
-        frame.can_id = 0x0;
+        frame.can_id = 0x00;
         frame.can_dlc = 2;
-        memset(&frame, 0x01, 2);
+        memset(&frame.data, 0x01, 2);
 
         this->writeData(frame);
     }

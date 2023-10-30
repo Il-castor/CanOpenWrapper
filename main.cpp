@@ -1,29 +1,35 @@
 #include "canbus_network.hpp"
+#include "canopen.hpp"
 #include "canbus.hpp"
 
 using namespace CanNetworkBase;
+using namespace CanOpenWrapper;
 using namespace CanBusBase;
 
 int main(int argc, char* argv[])
 {
     CanNetwork* pSocketCan = NULL;
     CANBus* pBus = NULL;
+    CANOpen* pCanOpen = NULL;
+    CANOpen* pCanOpen_ = NULL;
 
     try 
     {
-        pSocketCan = new CanNetwork("vcan0", 500000);
-        int nSocket = pSocketCan->getSocket();
+        pSocketCan = new CanNetwork("can0", 1000000);
+        
+        // steer
+        pCanOpen = new CANOpen(18, pSocketCan->getSocket(), 0x600, 0x580);
 
-        printf("[ SOCKET ]: %d\n", nSocket);
+        pCanOpen->download<uint8_t>(0x6060, 0x00, static_cast<uint8_t>(0x01));
+        pCanOpen->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0600));
+        pCanOpen->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0F00));
+        
+        // brake
+        pCanOpen_ = new CANOpen(1, pSocketCan->getSocket(), 0x600, 0x580);
 
-        pBus = new CANBus(nSocket);
-
-        struct can_frame frame;
-        frame.can_id = 0x01;
-        frame.can_dlc = 1;
-        frame.data[0] = 0x02;
-
-        pBus->writeData(frame);
+        pCanOpen_->download<uint8_t>(0x6060, 0x00, static_cast<uint8_t>(0x01));
+        pCanOpen_->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0600));
+        pCanOpen_->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0F00));
 
     }
     catch (CANException &canError)
@@ -44,6 +50,12 @@ int main(int argc, char* argv[])
 
     if (pBus != NULL)
         delete pBus;
+    
+    if (pCanOpen != NULL)
+        delete pCanOpen;
+
+    if (pCanOpen_ != NULL)
+        delete pCanOpen_;
 
     return 0;
 }

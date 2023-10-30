@@ -45,48 +45,6 @@ namespace CANOpenUtils
         
         }
     }
-
-    template <typename T>
-    canopen_frame getFrameFromData(int nMsgType, uint16_t nIndex, uint8_t nSubIndex, T value)
-    {
-        canopen_frame frame;
-
-        // In the First Byte of the Payload: 
-        // n is equal to the number of byte discarded starting from seventh byte
-        int nLen = CANOPEN_DATA_LENGTH - sizeof(T);
-
-        // Configuration of the first Header Byte
-        getCANOpenHeader(&frame.canopen_header[0], nMsgType, nLen);
-
-        // Set Index of the CanOpenFrame
-        frame.canopen_index = nIndex;
-
-        // Set SubIndex of the CanOpenFrame
-        frame.canopen_subindex = nSubIndex;
-
-        std::fill(frame.data, frame.data + sizeof(int), 0);
-        memcpy(frame.data, &value, sizeof(T));
-
-        // Insert Padding for the CANBus msg
-        int nFree = 0;
-        for (int i = 0; i < sizeof(T); i++)
-        {
-            if (frame.data[i] == 0)
-                nFree += 1;
-            else
-                break;
-        }
-
-        uint8_t correction[CANOPEN_DATA_LENGTH];
-        if (nFree > 0)
-        {
-            memcpy(correction, frame.data + nFree, sizeof(T) - nFree);
-            memcpy(correction + sizeof(T) - nFree, frame.data, nFree);
-            memcpy(frame.data, correction, sizeof(T));
-        }
-
-        return frame;
-    }
     
     can_frame getCANBusFrameFromCANOpenFrame(canopen_frame coFrame)
     {

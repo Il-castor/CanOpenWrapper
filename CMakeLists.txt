@@ -35,6 +35,7 @@ target_link_libraries(canopen_wrapper canopen_utils)
 target_link_libraries( main
     canbus_network
     canbus
+    canopen_wrapper
 )
 
 install(TARGETS 
