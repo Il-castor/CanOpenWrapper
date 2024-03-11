@@ -33,6 +33,7 @@ void CanBusWrapper::canBusCallback()
 
 void CanBusWrapper::subscribe(struct can_filter filter, callback_t callback)
 {
+    std::unique_lock<std::mutex> lock(this->m_mAddSubscribe);
     this->m_vSubscriptions.emplace_back(filter, callback);
 }
 

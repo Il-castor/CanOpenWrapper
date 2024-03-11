@@ -1,8 +1,14 @@
 #include "canbus.hpp"
 
 
-CANBus::CANBus(int nSocketCan, int nCanID, int nCanMask)
-: CanBusBase::CanBusWrapper(nSocketCan, nCanID, nCanMask) { }
+CANBus::CANBus(int nSocketCan, CanBusWrapper* wrapper, uint nMsgID, uint nMask)
+: m_cCanWrapper(wrapper) 
+{
+    this->m_cCanWrapper->subscribe(
+        {nMsgID, nMask}, 
+        std::bind(&CANBus::canBusListener, this, std::placeholders::_1)
+    );
+}
 
 void CANBus::canBusListener(struct can_frame cfd) 
 {

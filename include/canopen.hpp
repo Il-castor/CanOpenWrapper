@@ -9,7 +9,7 @@ namespace CanOpenWrapper {
     {
         private:
 
-            int m_nNodeID, m_nBaseIDReq, m_nBaseIDResp;
+            uint m_nNodeID, m_nBaseIDReq, m_nBaseIDResp;
             int m_nCounterCheck = 0;
             int m_nThreeshold = 0;
 
@@ -23,7 +23,7 @@ namespace CanOpenWrapper {
 
         public:
 
-            CANOpen(int nNodeID, CanBusWrapper* wrapper, int nBaseIDReq, int nBaseIDResp);
+            CANOpen(uint nNodeID, CanBusWrapper* wrapper, uint nBaseIDReq, uint nBaseIDResp);
             void canBusListener(struct can_frame cfd);
             
             template <typename T>

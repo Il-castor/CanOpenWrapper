@@ -3,13 +3,18 @@
 namespace CanOpenWrapper 
 {
 
-    CANOpen::CANOpen(int nNodeID, CanBusWrapper* wrapper, int nBaseIDReq, int nBaseIDResp) : m_cCanWrapper(wrapper)
+    CANOpen::CANOpen(uint nNodeID, CanBusWrapper* wrapper, uint nBaseIDReq, uint nBaseIDResp) 
+        : m_cCanWrapper(wrapper)
     {
         this->m_nNodeID = nNodeID;
         this->m_nBaseIDReq = nBaseIDReq;
         this->m_nBaseIDResp = nBaseIDResp;
         
         this->init();
+        this->m_cCanWrapper->subscribe(
+            {nBaseIDResp + nNodeID, 0x7FF}, 
+            std::bind(&CANOpen::canBusListener, this, std::placeholders::_1)
+        );
     }
 
     void CANOpen::init()

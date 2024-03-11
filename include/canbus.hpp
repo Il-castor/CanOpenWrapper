@@ -1,9 +1,15 @@
 #include "canbus_wrapper.hpp"
 
-class CANBus : public CanBusBase::CanBusWrapper
+using namespace CanBusBase;
+
+class CANBus
 {
+    private:
+
+        CanBusWrapper* m_cCanWrapper;
+
     public:
 
-        CANBus(int nSocketCan, int nCanID = 0x00, int nCanMask = 0x00);
+        CANBus(int nSocketCan, CanBusWrapper* wrapper, uint nMsgID=0x0, uint nMask=0x0);
         void canBusListener(struct can_frame cfd);
 };

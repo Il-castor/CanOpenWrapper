@@ -8,6 +8,7 @@
 #include <functional>
 #include <vector>
 #include <memory>
+#include <mutex>
 
 namespace CanBusBase {
 
@@ -31,6 +32,7 @@ namespace CanBusBase {
             bool m_bStop = false;
 
             std::vector<Subscription> m_vSubscriptions;
+            std::mutex m_mAddSubscribe;
 
             void canBusCallback();
         
