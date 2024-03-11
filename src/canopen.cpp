@@ -3,7 +3,7 @@
 namespace CanOpenWrapper 
 {
 
-    CANOpen::CANOpen(int nNodeID, std::shared_ptr<CanBusWrapper> wrapper, int nBaseIDReq, int nBaseIDResp) : m_cCanWrapper(wrapper)
+    CANOpen::CANOpen(int nNodeID, CanBusWrapper* wrapper, int nBaseIDReq, int nBaseIDResp) : m_cCanWrapper(wrapper)
     {
         this->m_nNodeID = nNodeID;
         this->m_nBaseIDReq = nBaseIDReq;

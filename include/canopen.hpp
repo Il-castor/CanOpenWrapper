@@ -9,15 +9,12 @@ namespace CanOpenWrapper {
     {
         private:
 
-            int m_nNodeID;
-            int m_nBaseIDReq;
-            int m_nBaseIDResp;
-
-            std::shared_ptr<CanBusWrapper> m_cCanWrapper;
-
-            CANOpenUtils::canopen_frame m_coLastMsgSent;
+            int m_nNodeID, m_nBaseIDReq, m_nBaseIDResp;
             int m_nCounterCheck = 0;
             int m_nThreeshold = 0;
+
+            CANOpenUtils::canopen_frame m_coLastMsgSent;
+            CanBusWrapper* m_cCanWrapper;
 
             void init();
 
@@ -26,7 +23,7 @@ namespace CanOpenWrapper {
 
         public:
 
-            CANOpen(int nNodeID, std::shared_ptr<CanBusWrapper> wrapper, int nBaseIDReq, int nBaseIDResp);
+            CANOpen(int nNodeID, CanBusWrapper* wrapper, int nBaseIDReq, int nBaseIDResp);
             void canBusListener(struct can_frame cfd);
             
             template <typename T>

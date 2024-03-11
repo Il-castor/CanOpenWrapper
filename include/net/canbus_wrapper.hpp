@@ -17,18 +17,20 @@ namespace CanBusBase {
     {
         struct Subscription {
             
-            struct can_filter m_filter;
+            can_filter m_filter;
             callback_t callback;
+
+            Subscription(can_filter f, callback_t c) : m_filter(f), callback(c) {}
 
         };
 
         private:
 
+            std::thread m_pThread;
             int m_nSocketCan;
             bool m_bStop = false;
 
             std::vector<Subscription> m_vSubscriptions;
-            std::unique_ptr<std::thread> m_pThread;
 
             void canBusCallback();
         

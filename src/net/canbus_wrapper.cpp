@@ -4,10 +4,7 @@ using namespace CanBusBase;
 using namespace CanNetworkBase;
 
 CanBusWrapper::CanBusWrapper(int nSocketCan, int nCanID, int nCanMask)
-{
-    this->m_nSocketCan = nSocketCan;
-    this->m_pThread = std::make_unique<std::thread>([this]() { canBusCallback(); });
-}
+   : m_pThread([this]() { canBusCallback(); }), m_nSocketCan(nSocketCan) {}
 
 void CanBusWrapper::canBusCallback()
 {
@@ -36,8 +33,7 @@ void CanBusWrapper::canBusCallback()
 
 void CanBusWrapper::subscribe(struct can_filter filter, callback_t callback)
 {
-    Subscription sub = {filter, callback};
-    this->m_vSubscriptions.push_back(sub);
+    this->m_vSubscriptions.emplace_back(filter, callback);
 }
 
 
@@ -50,6 +46,6 @@ void CanBusWrapper::writeData(struct can_frame frame)
 CanBusWrapper::~CanBusWrapper()
 {
     this->m_bStop = true;
-    if (this->m_pThread && this->m_pThread->joinable())
-        this->m_pThread->join();
+   if (this->m_pThread.joinable())
+       this->m_pThread.join();
 }
