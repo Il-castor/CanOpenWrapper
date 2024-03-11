@@ -1,15 +1,19 @@
 #include "canbus_wrapper.hpp"
 #include "utils.hpp"
 
+using namespace CanBusBase;
+
 namespace CanOpenWrapper {
 
-    class CANOpen : public CanBusBase::CanBusWrapper
+    class CANOpen
     {
         private:
 
             int m_nNodeID;
             int m_nBaseIDReq;
             int m_nBaseIDResp;
+
+            std::shared_ptr<CanBusWrapper> m_cCanWrapper;
 
             CANOpenUtils::canopen_frame m_coLastMsgSent;
             int m_nCounterCheck = 0;
@@ -22,7 +26,7 @@ namespace CanOpenWrapper {
 
         public:
 
-            CANOpen(int nNodeID, int nSocketCan, int nBaseIDReq, int nBaseIDResp);
+            CANOpen(int nNodeID, std::shared_ptr<CanBusWrapper> wrapper, int nBaseIDReq, int nBaseIDResp);
             void canBusListener(struct can_frame cfd);
             
             template <typename T>
@@ -39,7 +43,7 @@ namespace CanOpenWrapper {
                 can_frame frame = CANOpenUtils::getCANBusFrameFromCANOpenFrame(coFrame);
 
                 // Send the frame on the CANBus
-                this->writeData(frame);
+                this->m_cCanWrapper->writeData(frame);
 
                 this->m_coLastMsgSent = coFrame;
             }

@@ -7,9 +7,6 @@ CanBusWrapper::CanBusWrapper(int nSocketCan, int nCanID, int nCanMask)
 {
     this->m_nSocketCan = nSocketCan;
     this->m_pThread = std::make_unique<std::thread>([this]() { canBusCallback(); });
-
-    this->m_filter.can_id = nCanID;
-    this->m_filter.can_mask = nCanMask;
 }
 
 void CanBusWrapper::canBusCallback()
@@ -21,18 +18,28 @@ void CanBusWrapper::canBusCallback()
         int nBytes = read(this->m_nSocketCan, &cfd, sizeof(struct can_frame));
         if (nBytes > 0)
         {
-            if ((cfd.can_id & this->m_filter.can_mask) == (this->m_filter.can_id & this->m_filter.can_mask))
+
+            for (Subscription& s : this->m_vSubscriptions)
             {
-                /* if it need it possible to implement everything */
-                try {
-                    this->canBusListener(cfd);
+                if ((cfd.can_id & s.m_filter.can_mask) == (s.m_filter.can_id & s.m_filter.can_mask))
+                {
+                    try {
+                        s.callback(cfd);
+                    }
+                    catch (CANException &eErr) {}
                 }
-                catch (CANException &eErr) {}
             }
         }
 
     }
 }
+
+void CanBusWrapper::subscribe(struct can_filter filter, callback_t callback)
+{
+    Subscription sub = {filter, callback};
+    this->m_vSubscriptions.push_back(sub);
+}
+
 
 void CanBusWrapper::writeData(struct can_frame frame)
 {

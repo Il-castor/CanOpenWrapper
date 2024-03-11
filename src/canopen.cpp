@@ -3,12 +3,12 @@
 namespace CanOpenWrapper 
 {
 
-    CANOpen::CANOpen(int nNodeID, int nSocketCan, int nBaseIDReq, int nBaseIDResp)
-    : CanBusBase::CanBusWrapper(nSocketCan, nBaseIDResp + nNodeID, 0x7FF)
+    CANOpen::CANOpen(int nNodeID, std::shared_ptr<CanBusWrapper> wrapper, int nBaseIDReq, int nBaseIDResp) : m_cCanWrapper(wrapper)
     {
         this->m_nNodeID = nNodeID;
         this->m_nBaseIDReq = nBaseIDReq;
         this->m_nBaseIDResp = nBaseIDResp;
+        
         this->init();
     }
 
@@ -20,7 +20,7 @@ namespace CanOpenWrapper
         frame.can_dlc = 2;
         memset(&frame.data, 0x01, 2);
 
-        this->writeData(frame);
+        this->m_cCanWrapper->writeData(frame);
     }
 
     void CANOpen::canBusListener(struct can_frame cfd)

@@ -12,6 +12,7 @@
 
 #include <string>
 #include <exception>
+#include <unistd.h>
 
 namespace CanNetworkBase {
 
@@ -26,7 +27,7 @@ namespace CanNetworkBase {
         public:
 
             CanNetwork(std::string sInterface, int nBitrate);
-            virtual ~CanNetwork() {};
+            virtual ~CanNetwork() { close(this->m_nSocket); };
 
             int getSocket() { return this->m_nSocket; }
     };

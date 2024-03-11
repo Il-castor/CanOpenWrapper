@@ -15,21 +15,21 @@ int main(int argc, char* argv[])
 
     try 
     {
-        pSocketCan = new CanNetwork("can0", 1000000);
+        // pSocketCan = new CanNetwork("can0", 1000000);
         
-        // steer
-        pCanOpen = new CANOpen(18, pSocketCan->getSocket(), 0x600, 0x580);
+        // // steer
+        // pCanOpen = new CANOpen(18, pSocketCan->getSocket(), 0x600, 0x580);
 
-        pCanOpen->download<uint8_t>(0x6060, 0x00, static_cast<uint8_t>(0x01));
-        pCanOpen->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0600));
-        pCanOpen->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0F00));
+        // pCanOpen->download<uint8_t>(0x6060, 0x00, static_cast<uint8_t>(0x01));
+        // pCanOpen->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0600));
+        // pCanOpen->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0F00));
         
-        // brake
-        pCanOpen_ = new CANOpen(1, pSocketCan->getSocket(), 0x600, 0x580);
+        // // brake
+        // pCanOpen_ = new CANOpen(1, pSocketCan->getSocket(), 0x600, 0x580);
 
-        pCanOpen_->download<uint8_t>(0x6060, 0x00, static_cast<uint8_t>(0x01));
-        pCanOpen_->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0600));
-        pCanOpen_->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0F00));
+        // pCanOpen_->download<uint8_t>(0x6060, 0x00, static_cast<uint8_t>(0x01));
+        // pCanOpen_->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0600));
+        // pCanOpen_->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0F00));
 
     }
     catch (CANException &canError)
