@@ -33,6 +33,7 @@ namespace CanBusBase {
 
             std::vector<Subscription> m_vSubscriptions;
             std::mutex m_mAddSubscribe;
+            std::mutex m_mWriteOnSocket;
 
             void canBusCallback();
         

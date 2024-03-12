@@ -40,6 +40,7 @@ void CanBusWrapper::subscribe(struct can_filter filter, callback_t callback)
 
 void CanBusWrapper::writeData(struct can_frame frame)
 {
+    std::unique_lock<std::mutex> lock(this->m_mWriteOnSocket);
     if (write(this->m_nSocketCan, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame))
         throw CANException(WRITE_ON_SCK_ERR, "Error on write data to socket");
 }
