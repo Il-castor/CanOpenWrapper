@@ -10,7 +10,7 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(-Wall -Wextra -Wpedantic)
+    add_compile_options(-Wall -Wextra -Wpedantic -lpthread -O3)
 endif()
 
 include_directories(
@@ -32,10 +32,12 @@ target_link_libraries(canbus_wrapper canbus_network)
 target_link_libraries(canbus canbus_wrapper)
 target_link_libraries(canopen_wrapper canopen_utils)
 
+
 target_link_libraries( main
     canbus_network
     canbus
     canopen_wrapper
+    pthread
 )
 
 install(TARGETS 

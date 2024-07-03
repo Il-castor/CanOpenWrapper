@@ -57,7 +57,8 @@ namespace CanNetworkBase {
         WRITE_ON_SCK_ERR = -3,
         RECIVE_CAN_ERR = -4,
         MAX_LEN_EXCEEDED = -5,
-        FAILED_RECV_RESP = -6
+        FAILED_RECV_RESP = -6,
+        READ_ON_SCK_ERR = -7
     };
 
 };

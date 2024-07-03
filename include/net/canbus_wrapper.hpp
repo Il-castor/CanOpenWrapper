@@ -1,9 +1,10 @@
 #pragma once
 
 #include "canbus_network.hpp"
+//#include "canopen_utils/utils.hpp"
+
 
 #include <thread>
-#include <format>
 #include <unistd.h>
 #include <functional>
 #include <vector>
@@ -43,7 +44,11 @@ namespace CanBusBase {
             
             void writeData(struct can_frame frame);
             void subscribe(struct can_filter filter, callback_t callback);
+
             
+
+            struct can_frame readData(CANOpenUtils::canopen_frame frame);
+
             ~CanBusWrapper();
 
     };

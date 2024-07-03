@@ -1,4 +1,5 @@
 #include "canbus_wrapper.hpp"
+#include "utils.hpp"
 
 using namespace CanBusBase;
 using namespace CanNetworkBase;
@@ -38,11 +39,21 @@ void CanBusWrapper::subscribe(struct can_filter filter, callback_t callback)
 }
 
 
+
 void CanBusWrapper::writeData(struct can_frame frame)
 {
     std::unique_lock<std::mutex> lock(this->m_mWriteOnSocket);
     if (write(this->m_nSocketCan, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame))
         throw CANException(WRITE_ON_SCK_ERR, "Error on write data to socket");
+}
+
+struct can_frame CanBusWrapper::readData(canopen_frame frame)
+{
+    std::unique_lock<std::mutex> lock(this->m_mWriteOnSocket);
+    if (read(this->m_nSocketCan, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame))
+        throw CANException(READ_ON_SCK_ERR, "Error on read data from socket");
+
+    return frame;
 }
 
 CanBusWrapper::~CanBusWrapper()

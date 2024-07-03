@@ -44,6 +44,38 @@ namespace CanOpenWrapper {
 
                 this->m_coLastMsgSent = coFrame;
             }
+            
+            //casta a float gli ultimi 4 byte tramite template 
+            template <typename T>
+            T upload(uint16_t nIndex, uint8_t nSubIndex, int nTimeOut=5)
+            {
+                CANOpenUtils::canopen_frame coFrame;
+
+            
+                coFrame = CANOpenUtils::getFrameFromData<T>(CANOpenUtils::UPLOAD, nIndex, nSubIndex);
+
+                can_frame cFrame = this->m_cCanWrapper->readData(coFrame);
+
+                //can_frame frame = CANOpenUtils::getCANBusFrameFromCANOpenFrame(coFrame);
+                CANOpenUtils frame =  CANOpenUtils::getCANOpenFramFromCANBusFrame(cFrame);
+
+                /*frame.canopen_id = this->m_nBaseIDReq + m_nNodeID;
+                frame.canopen_index 
+                frame.canopen_subindex 
+                frame.canopen_data */
+
+
+
+                // dobbiamo leggere, prima parte uguale all'altra a parte la richiesta 
+                // controllare messaggio di ritorno, di tipo can_frame, dopo lo devi interpretare 
+                T data; 
+                //memcpy(&data, &c_frame.data[c_frame.can_dlc -4], sizeof(T));
+
+                //return data;
+
+
+            }
+            
     };
 
 }
