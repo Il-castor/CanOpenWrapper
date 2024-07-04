@@ -56,11 +56,13 @@ namespace CanOpenWrapper {
 
                 // ELE perche' read data ha un parametro? 
                 can_frame frame = this->m_cCanWrapper->readData();
+                CANOpenUtils::printCanFrame(frame);
+
                 
 
-                printf("Sono in upload. CAN frame: can_id = %x, can_dlc = %d, data = 0x%x \n", frame.can_id, frame.can_dlc, frame.data);
                 CANOpenUtils::canopen_frame coFrame = CANOpenUtils::getCANOpenFramFromCANBusFrame(frame);
-                printf("Sono in upload. canopen_frame: coFrame.data = 0x%x \n", coFrame.data);
+                printCanopenFrame(coFrame);
+
 
                 /*frame.canopen_id = this->m_nBaseIDReq + m_nNodeID;
                 frame.canopen_index 

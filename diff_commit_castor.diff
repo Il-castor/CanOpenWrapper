@@ -1,0 +1,233 @@
+diff --git a/compile.sh b/compile.sh
+index 91d26f3..6bcc282 100755
+--- a/compile.sh
++++ b/compile.sh
+@@ -12,4 +12,5 @@ if [ -f main ]; then
+     mv main ../main
+ else
+     echo "--------------------[  ERROR on COMPILING  ]--------------------"
++    exit 1 
+ fi
+\ No newline at end of file
+diff --git a/include/canopen.hpp b/include/canopen.hpp
+index 26c315f..e6f3617 100644
+--- a/include/canopen.hpp
++++ b/include/canopen.hpp
+@@ -49,15 +49,20 @@ namespace CanOpenWrapper {
+             template <typename T>
+             T upload(uint16_t nIndex, uint8_t nSubIndex, int nTimeOut=5)
+             {
+-                CANOpenUtils::canopen_frame coFrame;
++                // CANOpenUtils::canopen_frame coFrame = this->m_coLastMsgSent;
++                // can_frame frame = CANOpenUtils::getCANBusFrameFromCANOpenFrame(coFrame);
+ 
+-            
+-                coFrame = CANOpenUtils::getFrameFromData<T>(CANOpenUtils::UPLOAD, nIndex, nSubIndex);
++                // coFrame = CANOpenUtils::getFrameFromData<T>(CANOpenUtils::UPLOAD, nIndex, nSubIndex);
++
++                // ELE perche' read data ha un parametro? 
++                can_frame frame = this->m_cCanWrapper->readData();
++                CANOpenUtils::printCanFrame(frame);
++
++                
+ 
+-                can_frame cFrame = this->m_cCanWrapper->readData(coFrame);
++                CANOpenUtils::canopen_frame coFrame = CANOpenUtils::getCANOpenFramFromCANBusFrame(frame);
++                printCanopenFrame(coFrame);
+ 
+-                //can_frame frame = CANOpenUtils::getCANBusFrameFromCANOpenFrame(coFrame);
+-                CANOpenUtils frame =  CANOpenUtils::getCANOpenFramFromCANBusFrame(cFrame);
+ 
+                 /*frame.canopen_id = this->m_nBaseIDReq + m_nNodeID;
+                 frame.canopen_index 
+@@ -68,10 +73,10 @@ namespace CanOpenWrapper {
+ 
+                 // dobbiamo leggere, prima parte uguale all'altra a parte la richiesta 
+                 // controllare messaggio di ritorno, di tipo can_frame, dopo lo devi interpretare 
+-                T data; 
++                T data = 1;
+                 //memcpy(&data, &c_frame.data[c_frame.can_dlc -4], sizeof(T));
+ 
+-                //return data;
++                return data;
+ 
+ 
+             }
+diff --git a/include/canopen_utils/utils.hpp b/include/canopen_utils/utils.hpp
+index 5bce129..97cd5f6 100644
+--- a/include/canopen_utils/utils.hpp
++++ b/include/canopen_utils/utils.hpp
+@@ -4,7 +4,9 @@
+ 
+ #include <linux/can.h>
+ #include <linux/can/raw.h>
++#include <iostream>
+ 
++#pragma once
+ namespace CANOpenUtils {
+ 
+     #define CANOPEN_HEADER_SIZE 8
+@@ -102,4 +104,7 @@ namespace CANOpenUtils {
+     can_frame getCANBusFrameFromCANOpenFrame(canopen_frame coFrame);
+     canopen_frame getCANOpenFramFromCANBusFrame(can_frame frame);
+ 
++    void printCanopenFrame(const canopen_frame& frame) ;
++    void printCanFrame(const can_frame& frame) ;
++
+ }
+\ No newline at end of file
+diff --git a/include/net/canbus_wrapper.hpp b/include/net/canbus_wrapper.hpp
+index e78070d..9610640 100644
+--- a/include/net/canbus_wrapper.hpp
++++ b/include/net/canbus_wrapper.hpp
+@@ -1,7 +1,7 @@
+ #pragma once
+ 
+ #include "canbus_network.hpp"
+-//#include "canopen_utils/utils.hpp"
++#include "canopen_utils/utils.hpp"
+ 
+ 
+ #include <thread>
+@@ -47,7 +47,7 @@ namespace CanBusBase {
+ 
+             
+ 
+-            struct can_frame readData(CANOpenUtils::canopen_frame frame);
++            can_frame readData();
+ 
+             ~CanBusWrapper();
+ 
+diff --git a/main.cpp b/main.cpp
+index 5684e98..57dcf6c 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -32,10 +32,12 @@ int main(int argc, char* argv[])
+         // pCanOpen->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0F00));
+ 
+         //upload 
++        while (1) {
+         
+-        int data = pCanOpen->upload<int>(0x6060, 0x00);
+-        cout << "Data: " << data << endl;
+-
++            cout << "Faccio upload " << endl;
++            int data = pCanOpen->upload<int>(0x6060, 0x00);
++            cout << "Data: " << data << endl;
++        }
+ 
+         // // brake
+         // pCanOpen_ = new CANOpen(1, wrapper, 0x600, 0x580);
+diff --git a/src/canopen.cpp b/src/canopen.cpp
+index c7694b3..e5aba7f 100644
+--- a/src/canopen.cpp
++++ b/src/canopen.cpp
+@@ -30,6 +30,7 @@ namespace CanOpenWrapper
+ 
+     void CANOpen::canBusListener(struct can_frame cfd)
+     {
++        printf("Received CAN frame: can_id = %x, can_dlc = %d, data = 0x%x \n", cfd.can_id, cfd.can_dlc, cfd.data);
+         CANOpenUtils::canopen_frame coFrame;
+         coFrame = CANOpenUtils::getCANOpenFramFromCANBusFrame(cfd);
+ 
+diff --git a/src/canopen_utils/utils.cpp b/src/canopen_utils/utils.cpp
+index 28142f5..9acfb58 100644
+--- a/src/canopen_utils/utils.cpp
++++ b/src/canopen_utils/utils.cpp
+@@ -93,4 +93,34 @@ namespace CANOpenUtils
+         return coFrame;
+     }
+ 
++    void printCanopenFrame(const canopen_frame& frame) {
++        printf("CAN open frame\tid: %x\t", frame.canopen_id );
++        
++        std::cout << "header: ";
++        for (size_t i = 0; i < CANOPEN_HEADER_SIZE; ++i) {
++            std::cout << frame.canopen_header[i] << " ";
++        }
++        std::cout << "\t";
++        
++        printf("index: 0x%x \t" , frame.canopen_index );
++        printf("subindex: 0x%x \t" , frame.canopen_subindex );
++        
++        std::cout << "data: ";
++        for (size_t i = 0; i < CANOPEN_DATA_LENGTH; ++i) {
++            printf("0x%x ", frame.data[i]);
++        }
++        std::cout << std::endl;
++    }
++
++    void printCanFrame(const can_frame& frame) {
++        printf("CAN frame     \tid: %x \t dlc: %d\t data: ", frame.can_id, frame.can_dlc);
++        for (int i=0; i<CAN_MAX_DLEN; i++)
++            printf("0x%x ", frame.data[i]);
++        printf("\n");
++    
++    }
++
++
++
++
+ }
+\ No newline at end of file
+diff --git a/src/net/canbus_wrapper.cpp b/src/net/canbus_wrapper.cpp
+index 852b0c5..ff3b094 100644
+--- a/src/net/canbus_wrapper.cpp
++++ b/src/net/canbus_wrapper.cpp
+@@ -1,5 +1,5 @@
+ #include "canbus_wrapper.hpp"
+-#include "utils.hpp"
++// #include "utils.hpp"
+ 
+ using namespace CanBusBase;
+ using namespace CanNetworkBase;
+@@ -9,6 +9,7 @@ CanBusWrapper::CanBusWrapper(int nSocketCan, int nCanID, int nCanMask)
+ 
+ void CanBusWrapper::canBusCallback()
+ {
++    return;
+     while (!this->m_bStop)
+     {
+         struct can_frame cfd;
+@@ -16,11 +17,15 @@ void CanBusWrapper::canBusCallback()
+         int nBytes = read(this->m_nSocketCan, &cfd, sizeof(struct can_frame));
+         if (nBytes > 0)
+         {
++            printf("qnt byte letti: %d \n", nBytes );
+ 
+             for (Subscription& s : this->m_vSubscriptions)
+             {
++                printf("Trovata sub. cfd.can_id: 0x%x \t s.m_filter.can_mask: 0x%x \t s.m_filter.can_id: 0x%x \t s.m_filter.can_mask:  0x%x  \n", cfd.can_id, s.m_filter.can_mask, s.m_filter.can_id , s.m_filter.can_mask);
++
+                 if ((cfd.can_id & s.m_filter.can_mask) == (s.m_filter.can_id & s.m_filter.can_mask))
+                 {
++                    printf("Filtro passato\n" );
+                     try {
+                         s.callback(cfd);
+                     }
+@@ -47,13 +52,20 @@ void CanBusWrapper::writeData(struct can_frame frame)
+         throw CANException(WRITE_ON_SCK_ERR, "Error on write data to socket");
+ }
+ 
+-struct can_frame CanBusWrapper::readData(canopen_frame frame)
++can_frame CanBusWrapper::readData()
+ {
+-    std::unique_lock<std::mutex> lock(this->m_mWriteOnSocket);
+-    if (read(this->m_nSocketCan, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame))
++    // ELE Forse c'e da aggiungere un mutex uno del tipo read on socket ?
++    // std::unique_lock<std::mutex> lock(this->m_mWriteOnSocket);  
++    printf("sono in readdata\n");
++ 
++    CANOpenUtils::canopen_frame frame;
++    int nBytesLetti = read(this->m_nSocketCan, &frame, sizeof(can_frame)); 
++    printf("Ho letto %d bytes. sizeof = %d\n", nBytesLetti,  sizeof(can_frame));
++    if (nBytesLetti != sizeof(can_frame))
+         throw CANException(READ_ON_SCK_ERR, "Error on read data from socket");
+-
+-    return frame;
++    return CANOpenUtils::getCANBusFrameFromCANOpenFrame(frame);
++    // ELE return ?? 
++    // return frame;
+ }
+ 
+ CanBusWrapper::~CanBusWrapper()

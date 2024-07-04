@@ -93,4 +93,34 @@ namespace CANOpenUtils
         return coFrame;
     }
 
+    void printCanopenFrame(const canopen_frame& frame) {
+        printf("CAN open frame\tid: %x\t", frame.canopen_id );
+        
+        std::cout << "header: ";
+        for (size_t i = 0; i < CANOPEN_HEADER_SIZE; ++i) {
+            std::cout << frame.canopen_header[i] << " ";
+        }
+        std::cout << "\t";
+        
+        printf("index: 0x%x \t" , frame.canopen_index );
+        printf("subindex: 0x%x \t" , frame.canopen_subindex );
+        
+        std::cout << "data: ";
+        for (size_t i = 0; i < CANOPEN_DATA_LENGTH; ++i) {
+            printf("0x%x ", frame.data[i]);
+        }
+        std::cout << std::endl;
+    }
+
+    void printCanFrame(const can_frame& frame) {
+        printf("CAN frame     \tid: %x \t dlc: %d\t data: ", frame.can_id, frame.can_dlc);
+        for (int i=0; i<CAN_MAX_DLEN; i++)
+            printf("0x%x ", frame.data[i]);
+        printf("\n");
+    
+    }
+
+
+
+
 }

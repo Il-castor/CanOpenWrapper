@@ -4,6 +4,8 @@
 
 #include <linux/can.h>
 #include <linux/can/raw.h>
+#include <iostream>
+
 #pragma once
 namespace CANOpenUtils {
 
@@ -101,5 +103,8 @@ namespace CANOpenUtils {
 
     can_frame getCANBusFrameFromCANOpenFrame(canopen_frame coFrame);
     canopen_frame getCANOpenFramFromCANBusFrame(can_frame frame);
+
+    void printCanopenFrame(const canopen_frame& frame) ;
+    void printCanFrame(const can_frame& frame) ;
 
 }

@@ -55,15 +55,15 @@ void CanBusWrapper::writeData(struct can_frame frame)
 can_frame CanBusWrapper::readData()
 {
     // ELE Forse c'e da aggiungere un mutex uno del tipo read on socket ?
-    // std::unique_lock<std::mutex> lock(this->m_mWriteOnSocket);  
+    std::unique_lock<std::mutex> lock(this->m_mWriteOnSocket);  
     printf("sono in readdata\n");
  
-    CANOpenUtils::canopen_frame frame;
+    can_frame frame;
     int nBytesLetti = read(this->m_nSocketCan, &frame, sizeof(can_frame)); 
     printf("Ho letto %d bytes. sizeof = %d\n", nBytesLetti,  sizeof(can_frame));
     if (nBytesLetti != sizeof(can_frame))
         throw CANException(READ_ON_SCK_ERR, "Error on read data from socket");
-    return CANOpenUtils::getCANBusFrameFromCANOpenFrame(frame);
+    return frame; // CANOpenUtils::getCANBusFrameFromCANOpenFrame(frame);
     // ELE return ?? 
     // return frame;
 }
