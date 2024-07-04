@@ -47,7 +47,7 @@ namespace CanBusBase {
 
             
 
-            can_frame readData(CANOpenUtils::canopen_frame frame);
+            can_frame readData();
 
             ~CanBusWrapper();
 

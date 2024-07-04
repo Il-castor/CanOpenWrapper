@@ -49,16 +49,18 @@ namespace CanOpenWrapper {
             template <typename T>
             T upload(uint16_t nIndex, uint8_t nSubIndex, int nTimeOut=5)
             {
-                CANOpenUtils::canopen_frame coFrame;
+                // CANOpenUtils::canopen_frame coFrame = this->m_coLastMsgSent;
+                // can_frame frame = CANOpenUtils::getCANBusFrameFromCANOpenFrame(coFrame);
 
-            
                 // coFrame = CANOpenUtils::getFrameFromData<T>(CANOpenUtils::UPLOAD, nIndex, nSubIndex);
 
                 // ELE perche' read data ha un parametro? 
-                can_frame cFrame = this->m_cCanWrapper->readData(coFrame);
+                can_frame frame = this->m_cCanWrapper->readData();
+                
 
-                //can_frame frame = CANOpenUtils::getCANBusFrameFromCANOpenFrame(coFrame);
-                CANOpenUtils::canopen_frame frame =  CANOpenUtils::getCANOpenFramFromCANBusFrame(cFrame);
+                printf("Sono in upload. CAN frame: can_id = %x, can_dlc = %d, data = 0x%x \n", frame.can_id, frame.can_dlc, frame.data);
+                CANOpenUtils::canopen_frame coFrame = CANOpenUtils::getCANOpenFramFromCANBusFrame(frame);
+                printf("Sono in upload. canopen_frame: coFrame.data = 0x%x \n", coFrame.data);
 
                 /*frame.canopen_id = this->m_nBaseIDReq + m_nNodeID;
                 frame.canopen_index 
@@ -69,10 +71,10 @@ namespace CanOpenWrapper {
 
                 // dobbiamo leggere, prima parte uguale all'altra a parte la richiesta 
                 // controllare messaggio di ritorno, di tipo can_frame, dopo lo devi interpretare 
-                T data; 
+                T data = 1;
                 //memcpy(&data, &c_frame.data[c_frame.can_dlc -4], sizeof(T));
 
-                //return data;
+                return data;
 
 
             }

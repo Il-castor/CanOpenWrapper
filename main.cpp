@@ -32,11 +32,12 @@ int main(int argc, char* argv[])
         // pCanOpen->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0F00));
 
         //upload 
+        while (1) {
         
-        cout << "Faccio upload " << endl;
-        int data = pCanOpen->upload<int>(0x6060, 0x00);
-        cout << "Data: " << data << endl;
-
+            cout << "Faccio upload " << endl;
+            int data = pCanOpen->upload<int>(0x6060, 0x00);
+            cout << "Data: " << data << endl;
+        }
 
         // // brake
         // pCanOpen_ = new CANOpen(1, wrapper, 0x600, 0x580);

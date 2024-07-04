@@ -30,6 +30,7 @@ namespace CanOpenWrapper
 
     void CANOpen::canBusListener(struct can_frame cfd)
     {
+        printf("Received CAN frame: can_id = %x, can_dlc = %d, data = 0x%x \n", cfd.can_id, cfd.can_dlc, cfd.data);
         CANOpenUtils::canopen_frame coFrame;
         coFrame = CANOpenUtils::getCANOpenFramFromCANBusFrame(cfd);
 
