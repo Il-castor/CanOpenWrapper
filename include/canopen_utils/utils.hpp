@@ -4,7 +4,7 @@
 
 #include <linux/can.h>
 #include <linux/can/raw.h>
-
+#pragma once
 namespace CANOpenUtils {
 
     #define CANOPEN_HEADER_SIZE 8

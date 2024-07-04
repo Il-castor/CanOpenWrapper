@@ -1,5 +1,5 @@
 #include "canbus_wrapper.hpp"
-#include "utils.hpp"
+// #include "utils.hpp"
 
 using namespace CanBusBase;
 using namespace CanNetworkBase;
@@ -47,13 +47,14 @@ void CanBusWrapper::writeData(struct can_frame frame)
         throw CANException(WRITE_ON_SCK_ERR, "Error on write data to socket");
 }
 
-struct can_frame CanBusWrapper::readData(canopen_frame frame)
+can_frame CanBusWrapper::readData(CANOpenUtils::canopen_frame frame)
 {
-    std::unique_lock<std::mutex> lock(this->m_mWriteOnSocket);
+    // ELE Forse c'e da aggiungere un mutex uno del tipo read on socket ?
+    std::unique_lock<std::mutex> lock(this->m_mWriteOnSocket);  
     if (read(this->m_nSocketCan, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame))
         throw CANException(READ_ON_SCK_ERR, "Error on read data from socket");
-
-    return frame;
+    // ELE return ?? 
+    // return frame;
 }
 
 CanBusWrapper::~CanBusWrapper()

@@ -52,12 +52,13 @@ namespace CanOpenWrapper {
                 CANOpenUtils::canopen_frame coFrame;
 
             
-                coFrame = CANOpenUtils::getFrameFromData<T>(CANOpenUtils::UPLOAD, nIndex, nSubIndex);
+                // coFrame = CANOpenUtils::getFrameFromData<T>(CANOpenUtils::UPLOAD, nIndex, nSubIndex);
 
+                // ELE perche' read data ha un parametro? 
                 can_frame cFrame = this->m_cCanWrapper->readData(coFrame);
 
                 //can_frame frame = CANOpenUtils::getCANBusFrameFromCANOpenFrame(coFrame);
-                CANOpenUtils frame =  CANOpenUtils::getCANOpenFramFromCANBusFrame(cFrame);
+                CANOpenUtils::canopen_frame frame =  CANOpenUtils::getCANOpenFramFromCANBusFrame(cFrame);
 
                 /*frame.canopen_id = this->m_nBaseIDReq + m_nNodeID;
                 frame.canopen_index 

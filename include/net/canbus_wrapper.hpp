@@ -1,7 +1,7 @@
 #pragma once
 
 #include "canbus_network.hpp"
-//#include "canopen_utils/utils.hpp"
+#include "canopen_utils/utils.hpp"
 
 
 #include <thread>
@@ -47,7 +47,7 @@ namespace CanBusBase {
 
             
 
-            struct can_frame readData(CANOpenUtils::canopen_frame frame);
+            can_frame readData(CANOpenUtils::canopen_frame frame);
 
             ~CanBusWrapper();
 

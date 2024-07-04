@@ -33,6 +33,7 @@ int main(int argc, char* argv[])
 
         //upload 
         
+        cout << "Faccio upload " << endl;
         int data = pCanOpen->upload<int>(0x6060, 0x00);
         cout << "Data: " << data << endl;
 
