@@ -9,7 +9,7 @@ CanBusWrapper::CanBusWrapper(int nSocketCan, int nCanID, int nCanMask)
 
 void CanBusWrapper::canBusCallback()
 {
-    return;
+    return; // ELE - DA CHIEDERE A TOR
     while (!this->m_bStop)
     {
         struct can_frame cfd;
@@ -64,8 +64,6 @@ can_frame CanBusWrapper::readData()
     if (nBytesLetti != sizeof(can_frame))
         throw CANException(READ_ON_SCK_ERR, "Error on read data from socket");
     return frame; // CANOpenUtils::getCANBusFrameFromCANOpenFrame(frame);
-    // ELE return ?? 
-    // return frame;
 }
 
 CanBusWrapper::~CanBusWrapper()

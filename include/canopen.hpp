@@ -54,14 +54,13 @@ namespace CanOpenWrapper {
 
                 // coFrame = CANOpenUtils::getFrameFromData<T>(CANOpenUtils::UPLOAD, nIndex, nSubIndex);
 
-                // ELE perche' read data ha un parametro? 
                 can_frame frame = this->m_cCanWrapper->readData();
                 CANOpenUtils::printCanFrame(frame);
 
                 
 
-                CANOpenUtils::canopen_frame coFrame = CANOpenUtils::getCANOpenFramFromCANBusFrame(frame);
-                printCanopenFrame(coFrame);
+                // CANOpenUtils::canopen_frame coFrame = CANOpenUtils::getCANOpenFramFromCANBusFrame(frame);
+                // printCanopenFrame(coFrame);
 
 
                 /*frame.canopen_id = this->m_nBaseIDReq + m_nNodeID;
@@ -73,8 +72,8 @@ namespace CanOpenWrapper {
 
                 // dobbiamo leggere, prima parte uguale all'altra a parte la richiesta 
                 // controllare messaggio di ritorno, di tipo can_frame, dopo lo devi interpretare 
-                T data = 1;
-                //memcpy(&data, &c_frame.data[c_frame.can_dlc -4], sizeof(T));
+                T data ;
+                memcpy(&data, &frame.data[frame.can_dlc -4], sizeof(T));
 
                 return data;
 

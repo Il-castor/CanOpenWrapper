@@ -21,22 +21,27 @@ int main(int argc, char* argv[])
         pSocketCan = new CanNetwork("vcan0", 1000000);
         
         wrapper = new CanBusWrapper(pSocketCan->getSocket(),  0, 0xFF);
-        // // steer
+        // steer -> https://github.com/EdoardoTorrini/CanOpenWrapper/blob/9dc5f1910123b0622bce2c41ec691d22bb819d4e/main.cpp#L20
         // Terzo argomento: sara' il message ID dei messaggi mandati con download
         // 600 di default così è simile alla macchina 
         pCanOpen = new CANOpen(0x600, wrapper, 11, 0x580);      
 
 
-        //pCanOpen->download<uint8_t>(0x6060, 0x00, static_cast<uint8_t>(0x01));
-        //pCanOpen->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0600));
-        // pCanOpen->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0F00));
+        // pCanOpen->download<uint8_t>(0x6060, 0x00, static_cast<uint8_t>(0x01));
+        // self.download(0x6040, 0x00, b"\x06\x00")
+        // self.download(0x6040, 0x00, b"\x0F\x00")
+
+        // Enable the device
+        pCanOpen->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0600));
+        pCanOpen->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0F00));
 
         //upload 
         while (1) {
         
             cout << "Faccio upload " << endl;
             int data = pCanOpen->upload<int>(0x6060, 0x00);
-            cout << "Data: " << data << endl;
+            // cout << "Data: " << data << endl;
+            printf("data: %x \n", data);
         }
 
         // // brake
