@@ -36,6 +36,9 @@ namespace CanBusBase {
             std::mutex m_mAddSubscribe;
             std::mutex m_mWriteOnSocket;
 
+            std::mutex m_writingReadeingCanFrame;
+            std::vector<can_frame> readedCanFrame;
+
             void canBusCallback();
         
         public:

@@ -32,7 +32,7 @@ namespace CanOpenWrapper
     {
         // printf("Received CAN frame: can_id = %x, can_dlc = %d, data = 0x%x \n", cfd.can_id, cfd.can_dlc, cfd.data);
         printf("sono in canBusListener\n" ); 
-        CANOpenUtils::printCanFrame(cfd);   
+        // CANOpenUtils::printCanFrame(cfd);   
         
 
         CANOpenUtils::canopen_frame coFrame;

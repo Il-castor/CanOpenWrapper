@@ -32,16 +32,21 @@ int main(int argc, char* argv[])
         // self.download(0x6040, 0x00, b"\x0F\x00")
 
         // Enable the device
-        pCanOpen->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0600));
+        pCanOpen->download<uint16_t>(0x6040, 0x01, static_cast<uint16_t>(0x0605040));
         pCanOpen->download<uint16_t>(0x6040, 0x00, static_cast<uint16_t>(0x0F00));
 
         //upload 
         while (1) {
         
-            cout << "Faccio upload " << endl;
-            int data = pCanOpen->upload<int>(0x6060, 0x00);
+            // cout << "Faccio upload " << endl;
+            bool somethingWasRead = false;
+            int data = pCanOpen->upload<int>(0x6060, 0x00, somethingWasRead);
             // cout << "Data: " << data << endl;
-            printf("data: %x \n", data);
+            if (somethingWasRead) 
+                printf("------\nupload ha ritornato: %x \n------\n", data);
+            
+            
+            
         }
 
         // // brake

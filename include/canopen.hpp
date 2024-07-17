@@ -47,7 +47,7 @@ namespace CanOpenWrapper {
             
             //casta a float gli ultimi 4 byte tramite template 
             template <typename T>
-            T upload(uint16_t nIndex, uint8_t nSubIndex, int nTimeOut=5)
+            T upload(uint16_t nIndex, uint8_t nSubIndex, bool& somethingWasRead, int nTimeOut=5)
             {
                 // CANOpenUtils::canopen_frame coFrame = this->m_coLastMsgSent;
                 // can_frame frame = CANOpenUtils::getCANBusFrameFromCANOpenFrame(coFrame);
@@ -55,12 +55,16 @@ namespace CanOpenWrapper {
                 // coFrame = CANOpenUtils::getFrameFromData<T>(CANOpenUtils::UPLOAD, nIndex, nSubIndex);
 
                 can_frame frame = this->m_cCanWrapper->readData();
-                CANOpenUtils::printCanFrame(frame);
-
+                somethingWasRead = frame.can_dlc > 0 ; 
+                if (somethingWasRead)   {
+                    printf("sono nell upload. il frame e'");
+                    CANOpenUtils::printCanFrame(frame);
                 
 
-                // CANOpenUtils::canopen_frame coFrame = CANOpenUtils::getCANOpenFramFromCANBusFrame(frame);
-                // printCanopenFrame(coFrame);
+                    printf("sono nell upload. il co_frame e'");
+                    CANOpenUtils::canopen_frame coFrame = CANOpenUtils::getCANOpenFramFromCANBusFrame(frame);
+                    printCanopenFrame(coFrame);
+                }
 
 
                 /*frame.canopen_id = this->m_nBaseIDReq + m_nNodeID;

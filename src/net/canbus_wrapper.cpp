@@ -9,7 +9,6 @@ CanBusWrapper::CanBusWrapper(int nSocketCan, int nCanID, int nCanMask)
 
 void CanBusWrapper::canBusCallback()
 {
-    return; // ELE - DA CHIEDERE A TOR
     while (!this->m_bStop)
     {
         struct can_frame cfd;
@@ -17,6 +16,11 @@ void CanBusWrapper::canBusCallback()
         int nBytes = read(this->m_nSocketCan, &cfd, sizeof(struct can_frame));
         if (nBytes > 0)
         {
+            {
+                std::unique_lock<std::mutex> lock(this->m_writingReadeingCanFrame);
+                this->readedCanFrame.push_back(cfd); 
+            }
+
             printf("qnt byte letti: %d \n", nBytes );
 
             for (Subscription& s : this->m_vSubscriptions)
@@ -54,16 +58,15 @@ void CanBusWrapper::writeData(struct can_frame frame)
 
 can_frame CanBusWrapper::readData()
 {
-    // ELE Forse c'e da aggiungere un mutex uno del tipo read on socket ?
-    std::unique_lock<std::mutex> lock(this->m_mWriteOnSocket);  
-    printf("sono in readdata\n");
- 
-    can_frame frame;
-    int nBytesLetti = read(this->m_nSocketCan, &frame, sizeof(can_frame)); 
-    printf("Ho letto %d bytes. sizeof = %d\n", nBytesLetti,  sizeof(can_frame));
-    if (nBytesLetti != sizeof(can_frame))
-        throw CANException(READ_ON_SCK_ERR, "Error on read data from socket");
-    return frame; // CANOpenUtils::getCANBusFrameFromCANOpenFrame(frame);
+    std::unique_lock<std::mutex> lock2(this->m_writingReadeingCanFrame);
+    if (!readedCanFrame.empty()) {
+        can_frame frame = readedCanFrame.back();
+        readedCanFrame.pop_back(); 
+        // ELE - TODO svuotare il vettore
+        return frame; 
+    }
+    can_frame frame2 ; 
+    return frame2;   
 }
 
 CanBusWrapper::~CanBusWrapper()
